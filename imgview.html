@@ -22,7 +22,39 @@
 </form>
 <br />
 
+<div id="error_targ"></div>
+
+<script id="ajaxerror_templ" type="text/template">
+	<p>problem getting {{dir}}<br />
+	Error: {{errorThrown}}<br />
+	Status: {{status}}<br />
+	</p>
+</script>
+<div id="ajaxerror_targ"></div>
+
+<script id="granule_templ" type="text/template">
+	{{#granules.length}}
+		<p>Images:
+		{{#granules}}
+			<a href="#{{count}}">{{count}}</a>
+		{{/granules}}
+		</p>
+		{{#granules}}
+		<div class="granule">
+			<a name="{{count}}"></a> 
+			<h3 class="title">{{count}}) {{filename}}</h3>
+			<a href="{{url}}"><img src="{{url}}" /></a>
+			<br/>
+		</div>
+		<br />
+		{{/granules}}
+	{{/granules.length}}
+</script>
+<div id="granules_targ"></div>
+
+
 <script src="jquery-2.1.1.js"></script>
+<script src="mustache.js"></script>
 <script>
  
 // Read a page's GET URL variables and return them as an associative array.
@@ -48,7 +80,7 @@ function getURLVars() {
 $(document).ready(function() {
 	var queries = getURLVars();
 	if (!queries["dir"]) {
-		$("body").append("no directory specified");
+		$("#error_targ").replaceWith("no directory specified");
 		return;
 	}
 	var dir = decodeURIComponent(queries["dir"]);
@@ -59,36 +91,40 @@ $(document).ready(function() {
 		dataType: "html",
 		success: function(resp) {
 			$("#dirinput").val(dir);
-			$("body").append('<div id="imgcount"></div>');
+
 			var count = 0;
+			granules = [];
 			$(resp).find("a").each(function() {
-				var filename=$(this).attr("href");
-				$("#imgcount").val(42);
+				var filename = $(this).attr("href");
 				if (filename.match(/png$/)) {
-					$("body").append('<div class="granule"> \
-						<a name="'+(count+1).toString()+'"</a> \
-						<h3 class="title">'+(count+1).toString()+') '+filename+'</h3> \
-						<a href="'+dir+filename+'"> \
-							<img src="'+dir+filename+'" /></a><br/> \
-						</div><br />'
-					);
+					granules.push({
+						count: count+1,
+						filename: filename,
+						url: dir+filename,
+					});
 					count++;
 				}
 			});
+
+			granule_templ = $("#granule_templ").html();
+			Mustache.parse(granule_templ);
+			$("#granules_targ").html(Mustache.render(granule_templ, {
+				granules: granules,
+			}));
+
 			if (count == 0) {
-				$("body").append("no images found");
+				$("#error_targ").replaceWith("no images found");
 				return;
 			}
-			imgindex = ["<p>Images:"];
-			for (var i = 0; i < count; i++) {
-				imgindex.push('<a href="#'+(i+1).toString()+'">'+(i+1).toString()+'</a>');
-			}
-			$("#imgcount").replaceWith(imgindex.join(" "));
 		},
 		error: function(xhr, status, errorThrown) {
-			$("body").append('<p>problem getting '+dir+'<br />\
-				Error: '+errorThrown+'<br /> \
-				Status: '+status+'<br />');
+			ajaxerror_templ = $("#ajaxerror_templ").html();
+			Mustache.parse(ajaxerror_templ);
+			$("#ajaxerror_targ").html(Mustache.render(ajaxerror_templ, {
+				dir: dir,
+				errorThrown: errorThrown,
+				status: status,
+			}));
 		},
 	});
 });
