@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+
+<head>
+<meta charset="utf-8" />
+<title>Image Viewer</title>
+<style>
+.granule {
+	text-align: center;
+	background-color: #eeeeee;
+	border-style: solid;
+	border-color: #dddddd;
+}
+</style>
+</head>
+
+<body>
+<form>Directory (e.g.
+	<a href="?dir=/u/fhs/out/acspo/R20140710/">/u/fhs/out/acspo/R20140710/</a>):<br />
+	<input type="text" name="dir" id="dirinput" size="70">
+	<input type="submit" value="Submit"><br />
+</form>
+<br />
+
+<script src="jquery-2.1.1.js"></script>
+<script>
+ 
+// Read a page's GET URL variables and return them as an associative array.
+function getURLVars() {
+	var vars = [];
+	var pair, pairs;
+	var href = window.location.href;
+	var hash = href.indexOf('#');
+
+	if (hash < 0){
+		pairs = href.slice(href.indexOf('?')+1).split('&');
+	} else {
+		pairs = href.slice(href.indexOf('?')+1, hash).split('&');
+	}
+	for(var i = 0; i < pairs.length; i++) {
+		pair = pairs[i].split('=');
+		vars.push(pair[0]);
+		vars[pair[0]] = pair[1];
+	}
+	return vars;
+}
+
+$(document).ready(function() {
+	var queries = getURLVars();
+	if (!queries["dir"]) {
+		$("body").append("no directory specified");
+		return;
+	}
+	var dir = decodeURIComponent(queries["dir"]);
+	$.ajax({
+		url: dir,
+		data: {},
+		type: "GET",
+		dataType: "html",
+		success: function(resp) {
+			$("#dirinput").val(dir);
+			$("body").append('<div id="imgcount"></div>');
+			var count = 0;
+			$(resp).find("a").each(function() {
+				var filename=$(this).attr("href");
+				$("#imgcount").val(42);
+				if (filename.match(/png$/)) {
+					$("body").append('<div class="granule"> \
+						<a name="'+(count+1).toString()+'"</a> \
+						<h3 class="title">'+(count+1).toString()+') '+filename+'</h3> \
+						<a href="'+dir+filename+'"> \
+							<img src="'+dir+filename+'" /></a><br/> \
+						</div><br />'
+					);
+					count++;
+				}
+			});
+			if (count == 0) {
+				$("body").append("no images found");
+				return;
+			}
+			imgindex = ["<p>Images:"];
+			for (var i = 0; i < count; i++) {
+				imgindex.push('<a href="#'+(i+1).toString()+'">'+(i+1).toString()+'</a>');
+			}
+			$("#imgcount").replaceWith(imgindex.join(" "));
+		},
+		error: function(xhr, status, errorThrown) {
+			$("body").append('<p>problem getting '+dir+'<br />\
+				Error: '+errorThrown+'<br /> \
+				Status: '+status+'<br />');
+		},
+	});
+});
+ 
+</script>
+
+</body>
+</html>
