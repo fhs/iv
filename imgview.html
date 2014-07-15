@@ -17,8 +17,8 @@
 
 <body>
 <form>Directory (e.g.
-	<a href="?dir=/u/fhs/out/acspo/R20140710/">/u/fhs/out/acspo/R20140710/</a>):<br />
-	<input type="text" name="dir" id="dirinput" size="70">
+	<a href="?d=out/acspo/R20140710/">out/acspo/R20140710/</a>):<br />
+	<input type="text" name="d" id="dirinput" size="70">
 	<input type="submit" value="Submit"><br />
 </form>
 <br />
@@ -80,11 +80,11 @@ function getURLVars() {
 
 $(document).ready(function() {
 	var queries = getURLVars();
-	if (!queries["dir"]) {
+	if (!queries["d"]) {
 		$("#error_targ").replaceWith("no directory specified");
 		return;
 	}
-	var dir = decodeURIComponent(queries["dir"]);
+	var dir = decodeURIComponent(queries["d"]);
 	$.ajax({
 		url: dir,
 		data: {},
