@@ -12,6 +12,10 @@
 	border-style: solid;
 	border-color: #dddddd;
 }
+
+.hidden {
+	display: none;
+}
 </style>
 </head>
 
@@ -35,15 +39,29 @@
 
 <script id="granule_templ" type="text/template">
 	{{#granules.length}}
-		<p>Images:
-		{{#granules}}
-			<a href="#{{count}}">{{count}}</a>
-		{{/granules}}
+		<p>
+		<div id="shortlist">
+			Images:
+			{{#granules}}
+				<a href="#{{count}}">{{count}}</a>
+			{{/granules}}
+			<button onclick="showFilenames()">Show filenames</button>
+		</div>
+		<div id="longlist" class="hidden">
+			Images:
+			<ol>
+			{{#granules}}
+				<li><a href="#{{count}}">{{filename}}</a></li>
+			{{/granules}}
+			</ol>
+			<button onclick="hideFilenames()">Hide filenames</button>
+		</div>
 		</p>
+
 		{{#granules}}
 		<div class="granule">
 			<a name="{{count}}"></a> 
-			<h3 class="title">{{count}}) {{filename}}</h3>
+			<h3 class="title">{{count}}. {{filename}}</h3>
 			<a href="{{url}}"><img src="{{url}}" /></a>
 			<br/>
 		</div>
@@ -56,11 +74,6 @@
 
 <script src="jquery-2.1.1.js"></script>
 <script src="mustache.js"></script>
-<!--
-	TODO: show list of filesnames with links, possibly hidden by default if the
-		list is too long
-	TODO: deal with cached images?
--->
 <script>
  
 // Read a page's GET URL variables and return them as an associative array.
@@ -81,6 +94,16 @@ function getURLVars() {
 		vars[pair[0]] = pair[1];
 	}
 	return vars;
+}
+
+function showFilenames() {
+	$("#shortlist").hide("fast");
+	$("#longlist").show("fast");
+}
+
+function hideFilenames() {
+	$("#longlist").hide("fast");
+	$("#shortlist").show("fast");
 }
 
 $(document).ready(function() {
