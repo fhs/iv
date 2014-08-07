@@ -57,7 +57,6 @@
 <script src="jquery-2.1.1.js"></script>
 <script src="mustache.js"></script>
 <!--
-	TODO: fix image URLs if dir doesn't end in '/'
 	TODO: show list of filesnames with links, possibly hidden by default if the
 		list is too long
 	TODO: deal with cached images?
@@ -91,6 +90,9 @@ $(document).ready(function() {
 		return;
 	}
 	var dir = decodeURIComponent(queries["d"]);
+	if (dir.slice(-1) !== "/") {
+		dir += "/"
+	}
 	$.ajax({
 		url: dir,
 		data: {},
