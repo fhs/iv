@@ -43,7 +43,7 @@
 		<div id="shortlist">
 			Images:
 			{{#granules}}
-				<a href="#{{count}}">{{count}}</a>
+				<a href="#{{count}}" title="{{filename}}">{{count}}</a>
 			{{/granules}}
 			<button onclick="showFilenames()">Show filenames</button>
 		</div>
@@ -72,7 +72,7 @@
 <div id="granules_targ"></div>
 
 
-<script src="jquery-2.1.1.js"></script>
+<script src="jquery-2.1.1.min.js"></script>
 <script src="mustache.js"></script>
 <script>
  
