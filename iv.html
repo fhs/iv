@@ -31,13 +31,13 @@ img {
 
 <body>
 <form>Directory (e.g.
-	<a href="?d=out/acspo/R20140710/">out/acspo/R20140710/</a>):<br />
+	<a href="?d=out/">out/</a>):<br />
 	<input type="text" name="d" id="dirinput" size="70">
 	<input type="submit" value="Submit"><br />
 </form>
 <br />
 
-<div id="error_targ"></div>
+<p><div id="error_targ"></div></p>
 
 <script id="ajaxerror_templ" type="text/template">
 	<p>problem getting {{dir}}<br />
@@ -46,6 +46,18 @@ img {
 	</p>
 </script>
 <div id="ajaxerror_targ"></div>
+
+<script id="dirs_templ" type="text/template">
+	{{#dirs.length}}
+		Subdirectories:
+		<ul>
+		{{#dirs}}
+			<li><a href="?d={{url}}">{{filename}}</a></li>
+		{{/dirs}}
+		</ul>
+	{{/dirs.length}}
+</script>
+<div id="dirs_targ"></div>
 
 <script id="granule_templ" type="text/template">
 	{{#granules.length}}
@@ -83,6 +95,7 @@ img {
 
 <script src="jquery-2.1.1.min.js"></script>
 <script src="mustache.js"></script>
+<script src="URI.js"></script>
 <script>
  
 // Read a page's GET URL variables and return them as an associative array.
@@ -118,13 +131,19 @@ function hideFilenames() {
 $(document).ready(function() {
 	var queries = getURLVars();
 	if (!queries["d"]) {
-		$("#error_targ").replaceWith("no directory specified");
+		$("#error_targ").replaceWith("No directory specified.");
 		return;
 	}
 	var dir = decodeURIComponent(queries["d"]);
 	if (dir.slice(-1) !== "/") {
 		dir += "/"
 	}
+	dir = URI(dir).normalizePathname().toString();
+	if (!dir || dir.length === 0) {
+		$("#error_targ").replaceWith("No directory specified.");
+		return;
+	}
+
 	$.ajax({
 		url: dir,
 		data: {},
@@ -135,6 +154,7 @@ $(document).ready(function() {
 
 			var count = 0;
 			granules = [];
+			dirs = [];
 			$(resp).find("a").each(function() {
 				var filename = $(this).attr("href");
 				if (filename.match(/png$/)) {
@@ -145,6 +165,12 @@ $(document).ready(function() {
 					});
 					count++;
 				}
+				if (filename.match(/\/$/)) {
+					dirs.push({
+						filename: filename,
+						url: dir+filename,
+					});
+				}
 			});
 
 			granule_templ = $("#granule_templ").html();
@@ -153,8 +179,14 @@ $(document).ready(function() {
 				granules: granules,
 			}));
 
+			dirs_templ = $("#dirs_templ").html();
+			Mustache.parse(dirs_templ);
+			$("#dirs_targ").html(Mustache.render(dirs_templ, {
+				dirs: dirs,
+			}));
+
 			if (count == 0) {
-				$("#error_targ").replaceWith("no images found");
+				$("#error_targ").replaceWith("No images found.");
 				return;
 			}
 		},
