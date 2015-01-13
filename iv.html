@@ -16,8 +16,17 @@
 	padding-bottom: 5px;
 }
 
+.dirinputform {
+	text-align: center;
+}
+
 .hidden {
 	display: none;
+}
+
+.error {
+	text-align: center;
+	color: #D8000C;
 }
 
 img {
@@ -30,14 +39,15 @@ img {
 </head>
 
 <body>
-<form>Directory (e.g.
-	<a href="?d=out/">out/</a>):<br />
-	<input type="text" name="d" id="dirinput" size="70">
+<form class="dirinputform">
+	<input type="text" name="d" id="dirinput" size="50", placeholder="Directory">
 	<input type="submit" value="Submit"><br />
 </form>
 <br />
 
-<p><div id="error_targ"></div></p>
+<div class="error">
+<div id="error_targ"></div>
+</div>
 
 <script id="ajaxerror_templ" type="text/template">
 	<p>problem getting {{dir}}<br />
@@ -128,10 +138,14 @@ function hideFilenames() {
 	$("#shortlist").show("fast");
 }
 
+function fatal(msg) {
+	$("#error_targ").replaceWith(msg);
+}
+
 $(document).ready(function() {
 	var queries = getURLVars();
 	if (!queries["d"]) {
-		$("#error_targ").replaceWith("No directory specified.");
+		fatal("No directory specified.");
 		return;
 	}
 	var dir = decodeURIComponent(queries["d"]);
@@ -140,7 +154,7 @@ $(document).ready(function() {
 	}
 	dir = URI(dir).normalizePathname().toString();
 	if (!dir || dir.length === 0) {
-		$("#error_targ").replaceWith("No directory specified.");
+		fatal("No directory specified.");
 		return;
 	}
 
@@ -186,7 +200,7 @@ $(document).ready(function() {
 			}));
 
 			if (count == 0) {
-				$("#error_targ").replaceWith("No images found.");
+				fatal("No images found. Look inside subdirectories.");
 				return;
 			}
 		},
