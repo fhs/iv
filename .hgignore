@@ -1,6 +1,0 @@
-syntax: glob
-
-in
-out
-index.html
-scripts/viirs_sst
