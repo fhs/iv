@@ -1,100 +1,157 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
 <meta charset="utf-8" />
-<link rel="shortcut icon" href="favicon.ico">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 <title>Image Viewer</title>
+
+<link rel="shortcut icon" href="favicon.ico">
+
+<!-- Bootstrap -->
+<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
 <style>
-.granule {
-	text-align: center;
-	background-color: #eeeeee;
-	border-style: solid;
-	border-color: #dddddd;
-	padding-left: 5px;
-	padding-right: 5px;
-	padding-bottom: 5px;
+body {
+	padding-top: 70px;	/* required for navbar */
 }
 
-.dirinputform {
-	text-align: center;
-}
-
-.hidden {
-	display: none;
-}
-
-.error {
-	text-align: center;
-	color: #D8000C;
-}
-
-img {
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
-	max-width: 100%;
+/* remove carousel gradients from the sides, which sometimes overlaps with the image. */
+.carousel-control.left, .carousel-control.right {
+	background: none !important;
+	filter: progid:none !important;
 }
 </style>
+
 </head>
 
+
 <body>
-<form class="dirinputform">
-	<input type="text" name="d" id="dirinput" size="50", placeholder="Directory">
-	<input type="submit" value="Submit"><br />
-</form>
-<br />
+<div class="container-fluid">
 
-<div class="error">
-<div id="error_targ"></div>
-</div>
+<script id="navbar_templ" type="text/template">
+	<nav class="navbar navbar-default navbar-fixed-top">
+	<div class="container">
 
-<script id="ajaxerror_templ" type="text/template">
-	<p>problem getting {{dir}}<br />
-	Error: {{errorThrown}}<br />
-	Status: {{status}}<br />
-	</p>
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand">Image Viewer</div>
+    </div>
+
+	<!-- Collect the nav links, forms, and other content for toggling -->
+	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+	<ul class="nav navbar-nav">
+	{{#slidesview}}
+		<li><a href="?d={{dir}}">Home</a></li>
+		<li class="active"><a href="?d={{dir}}&s=1">Slides View<span class="sr-only">(current)</span></a></li>
+	{{/slidesview}}
+	{{^slidesview}}
+		<li class="active"><a href="?d={{dir}}">Home<span class="sr-only">(current)</span></a></li>
+		{{#hasimages}}
+			<li><a href="?d={{dir}}&s=1">Slides View</a></li>
+		{{/hasimages}}
+	{{/slidesview}}
+	</ul>
+	</div><!-- /.navbar-collapse -->
+	</div><!-- /.container-fluid -->
+	</nav>
 </script>
-<div id="ajaxerror_targ"></div>
+<div id="navbar_targ"></div>
 
+
+<div id="dirform" class="row">
+<div class="panel panel-default">
+<div class="panel-body">
+	<form>
+	<div class="form-group">
+		<label for="dirinput">Directory Path</label>
+		<input type="text" class="form-control" name="d" id="dirinput" placeholder="Directory">
+	</div>
+	<button type="submit" class="btn btn-default">Submit</button>
+	</form>
+</div>
+</div>
+</div> <!-- row class (form) -->
+
+
+<div class="row">
+<script id="error_templ" type="text/template">
+	<div class="alert alert-danger" role="alert"><p>{{error}}<p></div>
+</script>
+<div id="error_targ"></div>
+</div> <!-- row class (messages) -->
+
+
+<div id="dirlisting" class="row">
 <script id="dirs_templ" type="text/template">
+<div class="panel panel-default">
+<div class="panel-heading">Subdirectories</div>
+<div class="panel-body">
 	{{#dirs.length}}
-		Subdirectories:
 		<ul>
 		{{#dirs}}
 			<li><a href="?d={{url}}">{{filename}}</a></li>
 		{{/dirs}}
 		</ul>
 	{{/dirs.length}}
+</div>
+</div>
+</div>
 </script>
 <div id="dirs_targ"></div>
+</div> <!-- row class (directory listing) -->
+
+
+<div class="row">
 
 <script id="granule_templ" type="text/template">
 	{{#granules.length}}
-		<p>
-		<div id="shortlist">
-			Images:
+		<div id="shortlist" class="panel panel-default">
+			<div class="panel-heading">Images</div>
+			<div class="panel-body">
 			{{#granules}}
 				<a href="#{{count}}" title="{{filename}}">{{count}}</a>
 			{{/granules}}
-			<button onclick="showFilenames()">Show filenames</button>
+			<button onclick="showFilenames()" class="btn btn-default">Show filenames</button>
+			</div>
+			</div>
 		</div>
-		<div id="longlist" class="hidden">
-			Images:
+		<div id="longlist" class="hidden panel panel-default">
+			<div class="panel-heading">Images</div>
+			<div class="panel-body">
 			<ol>
 			{{#granules}}
 				<li><a href="#{{count}}">{{filename}}</a></li>
 			{{/granules}}
 			</ol>
-			<button onclick="hideFilenames()">Hide filenames</button>
+			<button onclick="hideFilenames()" class="btn btn-default">Hide filenames</button>
+			</div>
+			</div>
 		</div>
-		</p>
 
 		{{#granules}}
-		<div class="granule">
+		<div class="panel panel-default">
+			<div class="panel-heading">{{count}}. {{filename}}</div>
+			<div class="panel-body">
 			<a name="{{count}}"></a> 
-			<h3 class="title">{{count}}. {{filename}}</h3>
-			<a href="{{url}}"><img src="{{url}}" /></a>
+			<a href="{{url}}"><img class="img-responsive center-block" src="{{url}}" /></a>
+			</div>
+			</div>
 		</div>
 		<br />
 		{{/granules}}
@@ -102,8 +159,46 @@ img {
 </script>
 <div id="granules_targ"></div>
 
+<script id="slides_templ" type="text/template">
+	{{#granules.length}}
+		<div id="carousel-example-generic" class="carousel" data-ride="carousel" data-interval="">
+	
+		<!-- Wrapper for slides -->
+		<div class="carousel-inner" role="listbox">
+		{{#granules}}
+			{{#active}}
+				<div class="item active">
+			{{/active}}
+			{{^active}}
+				<div class="item">
+			{{/active}}
+			<a href="{{url}}">
+			<img class="img-responsive center-block" src="{{url}}" alt="{{filename}}" title="{{filename}}" />
+			</a>
+			<div class="carousel-caption">{{count}}/{{granules.length}}</div>
+			</div>
+		{{/granules}}
+		</div>
+	
+		<a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+		<span class="sr-only">Previous</span>
+		</a>
+		<a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+		<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+		<span class="sr-only">Next</span>
+		</a>
+		
+		</div>
+	{{/granules.length}}
+</script>
+<div id="slides_targ"></div>
 
-<script src="jquery-2.1.1.min.js"></script>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="mustache.js"></script>
 <script src="URI.js"></script>
 <script>
@@ -129,20 +224,43 @@ function getURLVars() {
 }
 
 function showFilenames() {
-	$("#shortlist").hide("fast");
-	$("#longlist").show("fast");
+	$("#shortlist").addClass('hidden');
+	$("#longlist").removeClass('hidden');
 }
 
 function hideFilenames() {
-	$("#longlist").hide("fast");
-	$("#shortlist").show("fast");
+	$("#longlist").addClass('hidden');
+	$("#shortlist").removeClass('hidden');
 }
 
 function fatal(msg) {
-	$("#error_targ").replaceWith(msg);
+	error_templ = $("#error_templ").html();
+	Mustache.parse(error_templ);
+	$("#error_targ").html(Mustache.render(error_templ, {
+		error: msg,
+	}));
 }
 
+// Carousel keyboard control doesn't work until the left/right arrow is clicked.
+// Make the click unnessesary.
+$(document).bind('keyup', function(e) {
+         if(e.which == 39){
+             $('.carousel').carousel('next');
+         }
+         else if(e.which == 37){
+             $('.carousel').carousel('prev');
+         }
+});
+
 $(document).ready(function() {
+	navbar_templ = $("#navbar_templ").html();
+	Mustache.parse(navbar_templ);
+	$("#navbar_targ").html(Mustache.render(navbar_templ, {
+		dir: dir,
+		hasimages: false,
+		slidesview: false,
+	}));
+
 	var queries = getURLVars();
 	if (!queries["d"]) {
 		fatal("No directory specified.");
@@ -176,6 +294,7 @@ $(document).ready(function() {
 						count: count+1,
 						filename: filename,
 						url: dir+filename,
+						active: false,
 					});
 					count++;
 				}
@@ -186,11 +305,14 @@ $(document).ready(function() {
 					});
 				}
 			});
-
-			granule_templ = $("#granule_templ").html();
-			Mustache.parse(granule_templ);
-			$("#granules_targ").html(Mustache.render(granule_templ, {
-				granules: granules,
+			if(granules.length > 0){
+				granules[0].active = true;	// for carousel
+			}
+			
+			$("#navbar_targ").html(Mustache.render(navbar_templ, {
+				dir: dir,
+				hasimages: granules.length > 0,
+				slidesview: queries["s"],
 			}));
 
 			dirs_templ = $("#dirs_templ").html();
@@ -199,24 +321,38 @@ $(document).ready(function() {
 				dirs: dirs,
 			}));
 
-			if (count == 0) {
+			if (granules.length == 0) {
 				fatal("No images found. Look inside subdirectories.");
 				return;
 			}
+
+			if (queries["s"]) {	// slides/carousel view
+				slides_templ = $("#slides_templ").html();
+				Mustache.parse(slides_templ);
+				$("#slides_targ").html(Mustache.render(slides_templ, {
+					granules: granules,
+				}));
+				
+				$("#dirform").addClass('hidden');
+				$("#dirlisting").addClass('hidden');
+			}else{
+				granule_templ = $("#granule_templ").html();
+				Mustache.parse(granule_templ);
+				$("#granules_targ").html(Mustache.render(granule_templ, {
+					granules: granules,
+				}));
+			}
 		},
 		error: function(xhr, status, errorThrown) {
-			ajaxerror_templ = $("#ajaxerror_templ").html();
-			Mustache.parse(ajaxerror_templ);
-			$("#ajaxerror_targ").html(Mustache.render(ajaxerror_templ, {
-				dir: dir,
-				errorThrown: errorThrown,
-				status: status,
-			}));
+			fatal("Problem getting " + dir + " (error: " + errorThrown + ", " + "status: " + status + ")");
 		},
 	});
 });
  
 </script>
 
+</div> <!-- row class (images) -->
+
+</div> <!-- container-fluid class -->
 </body>
 </html>
