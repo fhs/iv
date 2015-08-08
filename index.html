@@ -43,20 +43,22 @@ body {
 <body>
 <div class="container-fluid">
 
+<!-- Navigation bar -->
 <script id="navbar_templ" type="text/template">
 	<nav class="navbar navbar-default navbar-fixed-top">
 	<div class="container">
 
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <div class="navbar-brand">Image Viewer</div>
-    </div>
+	<!-- Brand and toggle get grouped for better mobile display -->
+	<div class="navbar-header">
+	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+		data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+	<span class="sr-only">Toggle navigation</span>
+	<span class="icon-bar"></span>
+	<span class="icon-bar"></span>
+	<span class="icon-bar"></span>
+	</button>
+	<div class="navbar-brand">Image Viewer</div>
+	</div> <!-- .navbar-header -->
 
 	<!-- Collect the nav links, forms, and other content for toggling -->
 	<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -77,13 +79,14 @@ body {
 		<li><p class="navbar-text" id="slidepos_targ"></p></li>
 	</ul>
 	
-	</div><!-- /.navbar-collapse -->
-	</div><!-- /.container-fluid -->
+	</div> <!-- .navbar-collapse -->
+	</div> <!-- .container-fluid -->
 	</nav>
 </script>
 <div id="navbar_targ"></div>
 
 
+<!-- Directory input form -->
 <div id="dirform" class="row">
 <div class="panel panel-default">
 <div class="panel-body">
@@ -94,19 +97,21 @@ body {
 	</div>
 	<button type="submit" class="btn btn-default">Submit</button>
 	</form>
-</div>
-</div>
-</div> <!-- row class (form) -->
+</div> <!-- .panel-body -->
+</div> <!-- .panel -->
+</div> <!-- .row, #dirform -->
 
 
+<!-- Error message -->
 <div class="row">
 <script id="error_templ" type="text/template">
 	<div class="alert alert-danger" role="alert"><p>{{error}}<p></div>
 </script>
 <div id="error_targ"></div>
-</div> <!-- row class (messages) -->
+</div> <!-- .row (messages) -->
 
 
+<!-- Directory listing -->
 <div id="dirlisting" class="row">
 <script id="dirs_templ" type="text/template">
 <div class="panel panel-default">
@@ -119,40 +124,41 @@ body {
 		{{/dirs}}
 		</ul>
 	{{/dirs.length}}
-</div>
-</div>
-</div>
+</div> <!-- .panel-body -->
+</div> <!-- .panel-heading -->
+</div> <!-- .panel -->
 </script>
 <div id="dirs_targ"></div>
-</div> <!-- row class (directory listing) -->
+</div> <!-- .row, #dirlisting -->
 
 
-
+<!-- Image filenames and thumbnails -->
 <script id="granule_templ" type="text/template">
 	{{#granules.length}}
 	<div class="row">
-
 	<div class="panel panel-default">
 	<div class="panel-heading" role="tab" id="headingThree">
 	<h4 class="panel-title">
-	<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-		Show Filenames ({{granules.length}} total)
+	<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+		href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+			Show Filenames ({{granules.length}} total)
 	</a>
 	</h4>
-	</div>
+	</div> <!-- .panel-heading -->
+	
 	<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
 	<div class="panel-body">
-			<ol>
-			{{#granules}}
-				<li><a href="?d={{dir}}&s=1#{{count}}">{{filename}}</a></li>
-			{{/granules}}
-			</ol>
-	</div>
-	</div>
-	</div>
-	</div> <!-- row class -->
+		<ol>
+		{{#granules}}
+			<li><a href="?d={{dir}}&s=1#{{count}}">{{filename}}</a></li>
+		{{/granules}}
+		</ol>
+	</div> <!-- .panel-body -->
+	</div> <!-- .panel-collapse -->
+	</div> <!-- .panel -->
+	</div> <!-- .row  -->
 
-	<div id="granuleimages" length="{{granules.length}}" class="row">
+	<div class="row">
 	<div class="panel panel-default">
 	<div class="panel-heading">
 	<h4 class="panel-title">Thumbnails ({{granules.length}} total)</h4>
@@ -164,63 +170,52 @@ body {
 		<a href="?d={{dir}}&s=1#{{count}}">
 			<img class="img-responsive img-thumbnail" src="{{url}}" alt="{{count}}. {{filename}}">
 		</a>
-		<div class="caption">
-			{{count}}. {{filename}}
+		<div class="caption">{{count}}. {{filename}}</div>
 		</div>
 		</div>
-		</div>
-		<!--
-		<div class="panel panel-default">
-			<div class="panel-heading">{{count}}. {{filename}}</div>
-			<div class="panel-body granulepanel" granulenum="{{count}}">
-			<a name="{{count}}"></a> 
-			<a href="{{url}}"><img class="img-responsive center-block" src="{{url}}" /></a>
-			</div>
-			</div>
-		</div>
-		-->
 		{{/granules}}
-	</div>
-	</div>
-	</div>
-	</div> <!-- row class (images) -->
+	</div> <!-- .panel-body -->
+	</div> <!-- .panel -->
+	</div> <!-- .row (images) -->
 	{{/granules.length}}
 </script>
 <div id="granules_targ"></div>
 
+
+<!-- Image slide show using carousel -->
 <script id="slides_templ" type="text/template">
 	{{#granules.length}}
-		<div id="myCarousel" class="carousel" data-ride="carousel" data-interval="">
-	
-		<!-- Wrapper for slides -->
-		<div class="carousel-inner" role="listbox">
-		{{#granules}}
-			{{#active}}
-				<div class="item active">
-			{{/active}}
-			{{^active}}
-				<div class="item">
-			{{/active}}
-			<a href="{{url}}">
-			<div class="slidebox">
-			<img class="img-responsive center-block slideimg" src="{{url}}" alt="{{filename}}" title="{{filename}}" />
-			</div>
-			</a>
-			<!-- <div class="carousel-caption">{{count}}/{{granules.length}}</div> -->
-			</div>
-		{{/granules}}
+	<div id="myCarousel" class="carousel" data-ride="carousel" data-interval="">
+
+	<!-- Wrapper for slides -->
+	<div class="carousel-inner" role="listbox">
+	{{#granules}}
+		{{#active}}
+			<div class="item active">
+		{{/active}}
+		{{^active}}
+			<div class="item">
+		{{/active}}
+		<a href="{{url}}">
+		<div class="slidebox">
+		<img class="img-responsive center-block slideimg" src="{{url}}" alt="{{filename}}" title="{{filename}}" />
 		</div>
-	
-		<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
-		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-		<span class="sr-only">Previous</span>
 		</a>
-		<a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
-		<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-		<span class="sr-only">Next</span>
-		</a>
-		
+		<!-- <div class="carousel-caption">{{count}}/{{granules.length}}</div> -->
 		</div>
+	{{/granules}}
+	</div>
+
+	<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+	<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+	<span class="sr-only">Previous</span>
+	</a>
+	<a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+	<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+	<span class="sr-only">Next</span>
+	</a>
+	
+	</div> <!-- .carousel -->
 	{{/granules.length}}
 </script>
 <div id="slides_targ"></div>
@@ -232,8 +227,9 @@ body {
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="mustache.js"></script>
 <script src="URI.js"></script>
+
+
 <script>
- 
 // Read a page's GET URL variables and return them as an associative array.
 function getURLVars() {
 	var vars = [];
@@ -254,16 +250,6 @@ function getURLVars() {
 	return vars;
 }
 
-function showFilenames() {
-	$("#shortlist").addClass('hidden');
-	$("#longlist").removeClass('hidden');
-}
-
-function hideFilenames() {
-	$("#longlist").addClass('hidden');
-	$("#shortlist").removeClass('hidden');
-}
-
 function fatal(msg) {
 	error_templ = $("#error_templ").html();
 	Mustache.parse(error_templ);
@@ -277,43 +263,9 @@ function setslideheight() {
 	$(".slidebox").height(h-70);	// window height - navbar padding
 }
 
-function intervaloverlap(a, b, c, d) {
-	n = Math.min(b, d) - Math.max(a, c)
-	if(n <= 0){
-		return 0;
-	}
-	return n;
-}
-
-function findcurrentimage() {
-	var windowHeight = $(window).height(),
-		gridTop = 0,
-		gridBottom = windowHeight;
-	var img = "1";
-	$('.granulepanel').each(function() {
-		var thisTop = $(this).offset().top - $(window).scrollTop();
-		var thisBottom = thisTop + $(this).height();
-		rat = intervaloverlap(thisTop, thisBottom, gridTop, gridBottom)*1.0 /  windowHeight;
-
-		if (rat > 0.4) {
-			//$(this).css('background', 'red');
-			img = $(this).attr("granulenum");
-		}
-	});
-	return img;
-}
-
-function setcurrentimage() {
-	ngranules = $("#granuleimages").attr("length");
-	img = findcurrentimage();
-	$("#slidepos_targ").html(img + "/" +ngranules);
-	//console.log("current image is " + img);
-}
-
 function updateslidepos(granules) {
 	var n = $('div.active').index() + 1;
 	window.location.hash = '#' + n.toString();
-	console.log("loaded slide " + ($('div.active').index()+1).toString());
 	$("#slidepos_targ").html(granules[n-1].filename + " (" +n + "/" + granules.length.toString() + ")" );
 }
 
@@ -329,30 +281,9 @@ function gethash(total){
 	return n;
 }
 
-// Carousel keyboard control doesn't work until the left/right arrow is clicked.
-// Make the click unnessesary.
-$(document).bind('keyup', function(e) {
-         if(e.which == 39){
-             $('.carousel').carousel('next');
-         }
-         else if(e.which == 37){
-             $('.carousel').carousel('prev');
-         }
-});
-
-/* conflicts with above? moves twice
-$(document).bind('mousewheel', function(e){
-	if(e.originalEvent.wheelDelta /120.0 > 0) {
-		$('.carousel').carousel('next');
-	} else {
-		$('.carousel').carousel('prev');
-	}
-});
-*/
-
-$(window).resize(setslideheight);
 
 $(document).ready(function() {
+	// set up initial navbar
 	navbar_templ = $("#navbar_templ").html();
 	Mustache.parse(navbar_templ);
 	$("#navbar_targ").html(Mustache.render(navbar_templ, {
@@ -361,6 +292,7 @@ $(document).ready(function() {
 		slidesview: false,
 	}));
 
+	// extract directory path from URL
 	var queries = getURLVars();
 	if (!queries["d"]) {
 		fatal("No directory specified.");
@@ -376,6 +308,7 @@ $(document).ready(function() {
 		return;
 	}
 
+	// Parse webserver directory listing and extract images
 	$.ajax({
 		url: dir,
 		data: {},
@@ -405,18 +338,15 @@ $(document).ready(function() {
 					});
 				}
 			});
-			if(granules.length > 0){
-				n = gethash(granules.length);
-				console.log("active slide is " + n.toString());
-				granules[n-1].active = true;	// for carousel
-			}
 			
+			// regenerate navbar
 			$("#navbar_targ").html(Mustache.render(navbar_templ, {
 				dir: dir,
 				hasimages: granules.length > 0,
 				slidesview: queries["s"],
 			}));
 
+			// generate directory listing
 			dirs_templ = $("#dirs_templ").html();
 			Mustache.parse(dirs_templ);
 			$("#dirs_targ").html(Mustache.render(dirs_templ, {
@@ -429,41 +359,69 @@ $(document).ready(function() {
 			}
 
 			if (queries["s"]) {	// slides/carousel view
+				// set the initial active slide to the in specified in URL hash
+				n = gethash(granules.length);
+				granules[n-1].active = true;
+				
+				// generate slides
 				slides_templ = $("#slides_templ").html();
 				Mustache.parse(slides_templ);
 				$("#slides_targ").html(Mustache.render(slides_templ, {
 					granules: granules,
 				}));
 				
+				// make slides fullscreen
 				$("#dirform").addClass('hidden');
 				$("#dirlisting").addClass('hidden');
 				setslideheight();
+				$(window).resize(setslideheight);
 
+				// update information displayed about current slide and URL hash
 				updateslidepos(granules);
 				$('#myCarousel').bind('slid.bs.carousel', function() {
 					updateslidepos(granules);
 				});
 				
+				// set current slide based on URL hash
 				window.onhashchange = function() {
 					var n = gethash(granules.length);
-					console.log("#hash: changed to #" + n.toString());
-					console.log("#hash: active slide is " + ($('div.active').index()+1).toString());
-
-					active = $('div.active').index()+1;
+					var active = $('div.active').index()+1;
 					if(n != active){
 						$('#myCarousel').carousel(n-1);
 					}
 				}
+
+				// Carousel keyboard control doesn't work until the left/right arrow is clicked.
+				// Make that initial click unnessesary.
+				/* conflicts with above? moves twice
+				$(document).bind('keyup', function(e) {
+				         if(e.which == 39){
+				             $('.carousel').carousel('next');
+				         }
+				         else if(e.which == 37){
+				             $('.carousel').carousel('prev');
+				         }
+				});
+				*/
+				
+				// navigate slides using mouse wheel
+				/* conflicts with above? moves twice
+				$(document).bind('mousewheel', function(e){
+					if(e.originalEvent.wheelDelta /120.0 > 0) {
+						$('.carousel').carousel('next');
+					} else {
+						$('.carousel').carousel('prev');
+					}
+				});
+				*/
 			}else{
+				// generate image filenames and thumbnails
 				granule_templ = $("#granule_templ").html();
 				Mustache.parse(granule_templ);
 				$("#granules_targ").html(Mustache.render(granule_templ, {
 					granules: granules,
 					dir: dir,
 				}));
-
-				//setcurrentimage();
-				//$(window).on('scroll', setcurrentimage);
 			}
 		},
 		error: function(xhr, status, errorThrown) {
@@ -471,11 +429,8 @@ $(document).ready(function() {
 		},
 	});
 });
-
-$(window).trigger('scroll');
-
 </script>
 
-</div> <!-- container-fluid class -->
+</div> <!-- .container-fluid -->
 </body>
 </html>
