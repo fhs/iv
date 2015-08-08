@@ -185,7 +185,7 @@ body {
 <!-- Image slide show using carousel -->
 <script id="slides_templ" type="text/template">
 	{{#granules.length}}
-	<div id="myCarousel" class="carousel" data-ride="carousel" data-interval="">
+	<div id="myCarousel" class="carousel" data-ride="carousel" data-interval="" data-keyboard="false">
 
 	<!-- Wrapper for slides -->
 	<div class="carousel-inner" role="listbox">
@@ -392,20 +392,17 @@ $(document).ready(function() {
 				}
 
 				// Carousel keyboard control doesn't work until the left/right arrow is clicked.
-				// Make that initial click unnessesary.
-				/* conflicts with above? moves twice
+				// Make that initial click unnessesary. This requires the keyboard control for Left/Right
+				// arrow is disabled in the carousel. Otherwise the movement happens twice.
 				$(document).bind('keyup', function(e) {
-				         if(e.which == 39){
-				             $('.carousel').carousel('next');
-				         }
-				         else if(e.which == 37){
-				             $('.carousel').carousel('prev');
-				         }
+					if(e.which == 39){
+						$('.carousel').carousel('next');
+					} else if(e.which == 37){
+						$('.carousel').carousel('prev');
+					}
 				});
-				*/
 				
 				// navigate slides using mouse wheel
-				/* conflicts with above? moves twice
 				$(document).bind('mousewheel', function(e){
 					if(e.originalEvent.wheelDelta /120.0 > 0) {
 						$('.carousel').carousel('next');
@@ -413,7 +410,6 @@ $(document).ready(function() {
 						$('.carousel').carousel('prev');
 					}
 				});
-				*/
 			}else{
 				// generate image filenames and thumbnails
 				granule_templ = $("#granule_templ").html();
