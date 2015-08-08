@@ -72,6 +72,11 @@ body {
 		{{/hasimages}}
 	{{/slidesview}}
 	</ul>
+	
+	<ul class="nav navbar-nav navbar-right">
+		<li><p class="navbar-text" id="slidepos_targ"></p></li>
+	</ul>
+	
 	</div><!-- /.navbar-collapse -->
 	</div><!-- /.container-fluid -->
 	</nav>
@@ -122,51 +127,70 @@ body {
 </div> <!-- row class (directory listing) -->
 
 
-<div class="row">
 
 <script id="granule_templ" type="text/template">
 	{{#granules.length}}
-		<div id="shortlist" class="panel panel-default">
-			<div class="panel-heading">Images</div>
-			<div class="panel-body">
-			{{#granules}}
-				<a href="#{{count}}" title="{{filename}}">{{count}}</a>
-			{{/granules}}
-			<button onclick="showFilenames()" class="btn btn-default">Show filenames</button>
-			</div>
-			</div>
-		</div>
-		<div id="longlist" class="hidden panel panel-default">
-			<div class="panel-heading">Images</div>
-			<div class="panel-body">
+	<div class="row">
+
+	<div class="panel panel-default">
+	<div class="panel-heading" role="tab" id="headingThree">
+	<h4 class="panel-title">
+	<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+		Show Filenames ({{granules.length}} total)
+	</a>
+	</h4>
+	</div>
+	<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+	<div class="panel-body">
 			<ol>
 			{{#granules}}
-				<li><a href="#{{count}}">{{filename}}</a></li>
+				<li><a href="?d={{dir}}&s=1#{{count}}">{{filename}}</a></li>
 			{{/granules}}
 			</ol>
-			<button onclick="hideFilenames()" class="btn btn-default">Hide filenames</button>
-			</div>
-			</div>
-		</div>
+	</div>
+	</div>
+	</div>
+	</div> <!-- row class -->
 
+	<div id="granuleimages" length="{{granules.length}}" class="row">
+	<div class="panel panel-default">
+	<div class="panel-heading">
+	<h4 class="panel-title">Thumbnails ({{granules.length}} total)</h4>
+	</div>
+	<div class="panel-body">
 		{{#granules}}
+		<div class="col-xs-6 col-md-3">
+		<div class="thumbnail">
+		<a href="?d={{dir}}&s=1#{{count}}">
+			<img class="img-responsive img-thumbnail" src="{{url}}" alt="{{count}}. {{filename}}">
+		</a>
+		<div class="caption">
+			{{count}}. {{filename}}
+		</div>
+		</div>
+		</div>
+		<!--
 		<div class="panel panel-default">
 			<div class="panel-heading">{{count}}. {{filename}}</div>
-			<div class="panel-body">
+			<div class="panel-body granulepanel" granulenum="{{count}}">
 			<a name="{{count}}"></a> 
 			<a href="{{url}}"><img class="img-responsive center-block" src="{{url}}" /></a>
 			</div>
 			</div>
 		</div>
-		<br />
+		-->
 		{{/granules}}
+	</div>
+	</div>
+	</div>
+	</div> <!-- row class (images) -->
 	{{/granules.length}}
 </script>
 <div id="granules_targ"></div>
 
 <script id="slides_templ" type="text/template">
 	{{#granules.length}}
-		<div id="carousel-example-generic" class="carousel" data-ride="carousel" data-interval="">
+		<div id="myCarousel" class="carousel" data-ride="carousel" data-interval="">
 	
 		<!-- Wrapper for slides -->
 		<div class="carousel-inner" role="listbox">
@@ -182,16 +206,16 @@ body {
 			<img class="img-responsive center-block slideimg" src="{{url}}" alt="{{filename}}" title="{{filename}}" />
 			</div>
 			</a>
-			<div class="carousel-caption">{{count}}/{{granules.length}}</div>
+			<!-- <div class="carousel-caption">{{count}}/{{granules.length}}</div> -->
 			</div>
 		{{/granules}}
 		</div>
 	
-		<a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
+		<a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
 		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
 		<span class="sr-only">Previous</span>
 		</a>
-		<a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
+		<a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
 		<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
 		<span class="sr-only">Next</span>
 		</a>
@@ -253,6 +277,58 @@ function setslideheight() {
 	$(".slidebox").height(h-70);	// window height - navbar padding
 }
 
+function intervaloverlap(a, b, c, d) {
+	n = Math.min(b, d) - Math.max(a, c)
+	if(n <= 0){
+		return 0;
+	}
+	return n;
+}
+
+function findcurrentimage() {
+	var windowHeight = $(window).height(),
+		gridTop = 0,
+		gridBottom = windowHeight;
+	var img = "1";
+	$('.granulepanel').each(function() {
+		var thisTop = $(this).offset().top - $(window).scrollTop();
+		var thisBottom = thisTop + $(this).height();
+		rat = intervaloverlap(thisTop, thisBottom, gridTop, gridBottom)*1.0 /  windowHeight;
+
+		if (rat > 0.4) {
+			//$(this).css('background', 'red');
+			img = $(this).attr("granulenum");
+		}
+	});
+	return img;
+}
+
+function setcurrentimage() {
+	ngranules = $("#granuleimages").attr("length");
+	img = findcurrentimage();
+	$("#slidepos_targ").html(img + "/" +ngranules);
+	//console.log("current image is " + img);
+}
+
+function updateslidepos(granules) {
+	var n = $('div.active').index() + 1;
+	window.location.hash = '#' + n.toString();
+	console.log("loaded slide " + ($('div.active').index()+1).toString());
+	$("#slidepos_targ").html(granules[n-1].filename + " (" +n + "/" + granules.length.toString() + ")" );
+}
+
+// parse URL hash, valid in range [1, total] and defaults to 1
+function gethash(total){
+	var n = '1';
+	if (location.hash.length > 0) {
+		n = parseInt(location.hash.replace('#',''), 10);
+	}
+	if(isNaN(n) || n < 1 || n > total){
+		n = 1;
+	}
+	return n;
+}
+
 // Carousel keyboard control doesn't work until the left/right arrow is clicked.
 // Make the click unnessesary.
 $(document).bind('keyup', function(e) {
@@ -263,6 +339,16 @@ $(document).bind('keyup', function(e) {
              $('.carousel').carousel('prev');
          }
 });
+
+/* conflicts with above? moves twice
+$(document).bind('mousewheel', function(e){
+	if(e.originalEvent.wheelDelta /120.0 > 0) {
+		$('.carousel').carousel('next');
+	} else {
+		$('.carousel').carousel('prev');
+	}
+});
+*/
 
 $(window).resize(setslideheight);
 
@@ -320,7 +406,9 @@ $(document).ready(function() {
 				}
 			});
 			if(granules.length > 0){
-				granules[0].active = true;	// for carousel
+				n = gethash(granules.length);
+				console.log("active slide is " + n.toString());
+				granules[n-1].active = true;	// for carousel
 			}
 			
 			$("#navbar_targ").html(Mustache.render(navbar_templ, {
@@ -350,12 +438,32 @@ $(document).ready(function() {
 				$("#dirform").addClass('hidden');
 				$("#dirlisting").addClass('hidden');
 				setslideheight();
+
+				updateslidepos(granules);
+				$('#myCarousel').bind('slid.bs.carousel', function() {
+					updateslidepos(granules);
+				});
+				
+				window.onhashchange = function() {
+					var n = gethash(granules.length);
+					console.log("#hash: changed to #" + n.toString());
+					console.log("#hash: active slide is " + ($('div.active').index()+1).toString());
+
+					active = $('div.active').index()+1;
+					if(n != active){
+						$('#myCarousel').carousel(n-1);
+					}
+				}
 			}else{
 				granule_templ = $("#granule_templ").html();
 				Mustache.parse(granule_templ);
 				$("#granules_targ").html(Mustache.render(granule_templ, {
 					granules: granules,
+					dir: dir,
 				}));
+
+				//setcurrentimage();
+				//$(window).on('scroll', setcurrentimage);
 			}
 		},
 		error: function(xhr, status, errorThrown) {
@@ -363,10 +471,10 @@ $(document).ready(function() {
 		},
 	});
 });
- 
-</script>
 
-</div> <!-- row class (images) -->
+$(window).trigger('scroll');
+
+</script>
 
 </div> <!-- container-fluid class -->
 </body>
