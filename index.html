@@ -22,7 +22,7 @@
 
 <style>
 body {
-	padding-top: 70px;	/* required for navbar */
+	padding-top: 60px;	/* required for navbar */
 }
 
 /* remove carousel gradients from the sides, which sometimes overlaps with the image. */
@@ -30,6 +30,11 @@ body {
 	background: none !important;
 	filter: progid:none !important;
 }
+
+.slideimg {
+	max-height: 100%;
+	max-width: 100%:
+};
 </style>
 
 </head>
@@ -173,7 +178,9 @@ body {
 				<div class="item">
 			{{/active}}
 			<a href="{{url}}">
-			<img class="img-responsive center-block" src="{{url}}" alt="{{filename}}" title="{{filename}}" />
+			<div class="slidebox">
+			<img class="img-responsive center-block slideimg" src="{{url}}" alt="{{filename}}" title="{{filename}}" />
+			</div>
 			</a>
 			<div class="carousel-caption">{{count}}/{{granules.length}}</div>
 			</div>
@@ -241,6 +248,11 @@ function fatal(msg) {
 	}));
 }
 
+function setslideheight() {
+	var h = $(window).height();
+	$(".slidebox").height(h-70);	// window height - navbar padding
+}
+
 // Carousel keyboard control doesn't work until the left/right arrow is clicked.
 // Make the click unnessesary.
 $(document).bind('keyup', function(e) {
@@ -251,6 +263,8 @@ $(document).bind('keyup', function(e) {
              $('.carousel').carousel('prev');
          }
 });
+
+$(window).resize(setslideheight);
 
 $(document).ready(function() {
 	navbar_templ = $("#navbar_templ").html();
@@ -335,6 +349,7 @@ $(document).ready(function() {
 				
 				$("#dirform").addClass('hidden');
 				$("#dirlisting").addClass('hidden');
+				setslideheight();
 			}else{
 				granule_templ = $("#granule_templ").html();
 				Mustache.parse(granule_templ);
