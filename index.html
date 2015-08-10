@@ -115,7 +115,9 @@ body {
 <div id="dirlisting" class="row">
 <script id="dirs_templ" type="text/template">
 <div class="panel panel-default">
-<div class="panel-heading">Subdirectories</div>
+<div class="panel-heading">
+	<h4 class="panel-title">Subdirectories</h4>
+</div>
 <div class="panel-body">
 	{{#dirs.length}}
 		<ul>
@@ -137,38 +139,37 @@ body {
 	{{#granules.length}}
 	<div class="row">
 	<div class="panel panel-default">
-	<div class="panel-heading" role="tab" id="headingThree">
-	<h4 class="panel-title">
-	<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
-		href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-			Show Filenames ({{granules.length}} total)
-	</a>
-	</h4>
-	</div> <!-- .panel-heading -->
-	
-	<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-	<div class="panel-body">
-		<ol>
-		{{#granules}}
-			<li><a href="?d={{dir}}&s=1#{{count}}">{{filename}}</a></li>
-		{{/granules}}
-		</ol>
-	</div> <!-- .panel-body -->
-	</div> <!-- .panel-collapse -->
-	</div> <!-- .panel -->
-	</div> <!-- .row  -->
-
-	<div class="row">
-	<div class="panel panel-default">
 	<div class="panel-heading">
-	<h4 class="panel-title">Thumbnails ({{granules.length}} total)</h4>
+	<h4 class="panel-title">Images ({{granules.length}} total)</h4>
 	</div>
 	<div class="panel-body">
+
+		<div class="panel panel-default">
+		<div class="panel-heading" role="tab" id="headingThree">
+		<h4 class="panel-title">
+		<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion"
+			href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+				List Filenames
+		</a>
+		</h4>
+		</div> <!-- .panel-heading -->
+		
+		<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+		<div class="panel-body">
+			<ol>
+			{{#granules}}
+				<li><a href="?d={{dir}}&s=1#{{count}}">{{filename}}</a></li>
+			{{/granules}}
+			</ol>
+		</div> <!-- .panel-body -->
+		</div> <!-- .panel-collapse -->
+		</div> <!-- .panel -->
+
 		{{#granules}}
 		<div class="col-xs-6 col-md-3">
 		<div class="thumbnail">
 		<a href="?d={{dir}}&s=1#{{count}}">
-			<img class="img-responsive img-thumbnail" src="{{url}}" alt="{{count}}. {{filename}}">
+			<img class="img-responsive" src="{{url}}" alt="{{count}}. {{filename}}">
 		</a>
 		<div class="caption">{{count}}. {{filename}}</div>
 		</div>
@@ -185,6 +186,7 @@ body {
 <!-- Image slide show using carousel -->
 <script id="slides_templ" type="text/template">
 	{{#granules.length}}
+	<div class="row">
 	<div id="myCarousel" class="carousel" data-ride="carousel" data-interval="" data-keyboard="false">
 
 	<!-- Wrapper for slides -->
@@ -216,6 +218,7 @@ body {
 	</a>
 	
 	</div> <!-- .carousel -->
+	</div> <!-- .row (carousel) -->
 	{{/granules.length}}
 </script>
 <div id="slides_targ"></div>
