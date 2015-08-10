@@ -33,7 +33,7 @@ body {
 
 .slideimg {
 	max-height: 100%;
-	max-width: 100%:
+	max-width: 100%;
 };
 </style>
 
@@ -165,16 +165,18 @@ body {
 		</div> <!-- .panel-collapse -->
 		</div> <!-- .panel -->
 
+		<div class="grid">
 		{{#granules}}
-		<div class="col-xs-6 col-md-3">
+		<div class="grid-item">
 		<div class="thumbnail">
 		<a href="?d={{dir}}&s=1#{{count}}">
-			<img class="img-responsive" src="{{url}}" alt="{{count}}. {{filename}}">
+			<img class="img-responsive thumbnailimg" src="{{url}}" alt="{{count}}. {{filename}}">
 		</a>
 		<div class="caption">{{count}}. {{filename}}</div>
 		</div>
 		</div>
 		{{/granules}}
+		</div>
 	</div> <!-- .panel-body -->
 	</div> <!-- .panel -->
 	</div> <!-- .row (images) -->
@@ -230,6 +232,8 @@ body {
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="mustache.js"></script>
 <script src="URI.js"></script>
+<script src="bower_components/imagesloaded/imagesloaded.pkgd.min.js"></script>
+<script src="bower_components/masonry/dist/masonry.pkgd.min.js"></script>
 
 
 <script>
@@ -421,6 +425,22 @@ $(document).ready(function() {
 					granules: granules,
 					dir: dir,
 				}));
+
+				// Set up masonary.
+				// CSS needs to be here so that it's applied after template is evaluated?
+				$(".grid-item").css("float", "left");
+				$(".grid-item").css("width", "300px");
+				$(".grid-item").css("word-wrap", "break-word");	// captions in firefox
+				$(".thumbnailimg").css("max-width", "100%");
+				$(".thumbnailimg").css("max-height", "100%");
+				var $grid = $('.grid').imagesLoaded( function() {
+					// init Masonry after all images have loaded
+					$grid.masonry({
+						itemSelector: '.grid-item',
+						columnWidth: 310
+					});
+				});
+
 			}
 		},
 		error: function(xhr, status, errorThrown) {
